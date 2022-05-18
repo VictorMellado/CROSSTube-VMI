@@ -1,5 +1,7 @@
 package es.crosstube.services;
 
+import es.crosstube.model.dto.TipoUsuario;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -14,12 +16,20 @@ public class MySqlConnectionService {
     private String userName;
     private String password;
 
-    public MySqlConnectionService() {
+    public MySqlConnectionService(TipoUsuario tipoUsuario) {
 
         try {
             Properties properties = new Properties();
-            properties.load(new FileReader(MySqlConnectionService.class.getResource("/database/db.properties").getFile()));
-
+            switch (tipoUsuario){
+                case ADMIN:
+                    properties.load(new FileReader(MySqlConnectionService.class.getResource("/database/db.properties").getFile()));
+                    break;
+                case AUTENTICADO:
+                    properties.load(new FileReader(MySqlConnectionService.class.getResource("/database/dbUserAutenticado.properties").getFile()));
+                    break;
+                default:
+                    properties.load(new FileReader(MySqlConnectionService.class.getResource("/database/dbUserNormal.properties").getFile()));
+            }
             this.ip = String.valueOf(properties.get("ip"));
             this.database = String.valueOf(properties.get("database"));
             this.userName = String.valueOf(properties.get("user"));
